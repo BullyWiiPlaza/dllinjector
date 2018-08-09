@@ -90,6 +90,11 @@ HANDLE attachToProcess(DWORD procID) {
 			printf("\t[+] Attaching to Process ID: %d\n", procID);
 			return OpenProcess( PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ, FALSE, procID );
 		}
+		if (osver.dwMajorVersion == 6 && osver.dwMinorVersion == 2) {
+			printf("\t[+] Detected Windows 10\n");
+			printf("\t[+] Attaching to Process ID: %d\n", procID);
+			return OpenProcess(PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ, FALSE, procID);
+		}
 	} else {
 		printf("\n[!] Could not detect OS version\n");
 	}
