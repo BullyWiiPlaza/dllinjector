@@ -31,8 +31,8 @@
 DWORD Rva2Offset( DWORD dwRva, UINT_PTR uiBaseAddress )
 {    
 	WORD wIndex                          = 0;
-	PIMAGE_SECTION_HEADER pSectionHeader = NULL;
-	PIMAGE_NT_HEADERS pNtHeaders         = NULL;
+	PIMAGE_SECTION_HEADER pSectionHeader = nullptr;
+	PIMAGE_NT_HEADERS pNtHeaders         = nullptr;
 	
 	pNtHeaders = (PIMAGE_NT_HEADERS)(uiBaseAddress + ((PIMAGE_DOS_HEADER)uiBaseAddress)->e_lfanew);
 
@@ -110,7 +110,7 @@ DWORD GetReflectiveLoaderOffset( VOID * lpReflectiveDllBuffer )
 	{
 		char * cpExportedFunctionName = (char *)(uiBaseAddress + Rva2Offset( DEREF_32( uiNameArray ), uiBaseAddress ));
 
-		if( strstr( cpExportedFunctionName, "ReflectiveLoader" ) != NULL )
+		if( strstr( cpExportedFunctionName, "ReflectiveLoader" ) != nullptr )
 		{
 			// get the File Offset for the array of addresses
 			uiAddressArray = uiBaseAddress + Rva2Offset( ((PIMAGE_EXPORT_DIRECTORY )uiExportDir)->AddressOfFunctions, uiBaseAddress );	
@@ -134,15 +134,15 @@ DWORD GetReflectiveLoaderOffset( VOID * lpReflectiveDllBuffer )
 // Loads a DLL image from memory via its exported ReflectiveLoader function
 HMODULE WINAPI LoadLibraryR( LPVOID lpBuffer, DWORD dwLength )
 {
-	HMODULE hResult                    = NULL;
+	HMODULE hResult                    = nullptr;
 	DWORD dwReflectiveLoaderOffset     = 0;
 	DWORD dwOldProtect1                = 0;
 	DWORD dwOldProtect2                = 0;
-	REFLECTIVELOADER pReflectiveLoader = NULL;
-	DLLMAIN pDllMain                   = NULL;
+	REFLECTIVELOADER pReflectiveLoader = nullptr;
+	DLLMAIN pDllMain                   = nullptr;
 
-	if( lpBuffer == NULL || dwLength == 0 )
-		return NULL;
+	if( lpBuffer == nullptr || dwLength == 0 )
+		return nullptr;
 
 	__try
 	{
@@ -158,11 +158,11 @@ HMODULE WINAPI LoadLibraryR( LPVOID lpBuffer, DWORD dwLength )
 			{
 				// call the librarys ReflectiveLoader...
 				pDllMain = (DLLMAIN)pReflectiveLoader();
-				if( pDllMain != NULL )
+				if( pDllMain != nullptr )
 				{
 					// call the loaded librarys DllMain to get its HMODULE
-					if( !pDllMain( NULL, DLL_QUERY_HMODULE, &hResult ) )	
-						hResult = NULL;
+					if( !pDllMain(nullptr, DLL_QUERY_HMODULE, &hResult ) )	
+						hResult = nullptr;
 				}
 				// revert to the previous protection flags...
 				VirtualProtect( lpBuffer, dwLength, dwOldProtect1, &dwOldProtect2 );
@@ -171,7 +171,7 @@ HMODULE WINAPI LoadLibraryR( LPVOID lpBuffer, DWORD dwLength )
 	}
 	__except( EXCEPTION_EXECUTE_HANDLER )
 	{
-		hResult = NULL;
+		hResult = nullptr;
 	}
 
 	return hResult;
@@ -188,9 +188,9 @@ HMODULE WINAPI LoadLibraryR( LPVOID lpBuffer, DWORD dwLength )
 HANDLE WINAPI LoadRemoteLibraryR( HANDLE hProcess, LPVOID lpBuffer, DWORD dwLength, LPVOID lpParameter )
 {
 	BOOL bSuccess                             = FALSE;
-	LPVOID lpRemoteLibraryBuffer              = NULL;
-	LPTHREAD_START_ROUTINE lpReflectiveLoader = NULL;
-	HANDLE hThread                            = NULL;
+	LPVOID lpRemoteLibraryBuffer              = nullptr;
+	LPTHREAD_START_ROUTINE lpReflectiveLoader = nullptr;
+	HANDLE hThread                            = nullptr;
 	DWORD dwReflectiveLoaderOffset            = 0;
 	DWORD dwThreadId                          = 0;
 
@@ -207,26 +207,26 @@ HANDLE WINAPI LoadRemoteLibraryR( HANDLE hProcess, LPVOID lpBuffer, DWORD dwLeng
 				break;
 
 			// alloc memory (RWX) in the host process for the image...
-			lpRemoteLibraryBuffer = VirtualAllocEx( hProcess, NULL, dwLength, MEM_RESERVE|MEM_COMMIT, PAGE_EXECUTE_READWRITE ); 
+			lpRemoteLibraryBuffer = VirtualAllocEx( hProcess, nullptr, dwLength, MEM_RESERVE|MEM_COMMIT, PAGE_EXECUTE_READWRITE ); 
 			if( !lpRemoteLibraryBuffer )
 				break;
 
 			// write the image into the host process...
-			if( !WriteProcessMemory( hProcess, lpRemoteLibraryBuffer, lpBuffer, dwLength, NULL ) )
+			if( !WriteProcessMemory( hProcess, lpRemoteLibraryBuffer, lpBuffer, dwLength, nullptr ) )
 				break;
 			
 			// add the offset to ReflectiveLoader() to the remote library address...
 			lpReflectiveLoader = (LPTHREAD_START_ROUTINE)( (ULONG_PTR)lpRemoteLibraryBuffer + dwReflectiveLoaderOffset );
 
 			// create a remote thread in the host process to call the ReflectiveLoader!
-			hThread = CreateRemoteThread( hProcess, NULL, 1024*1024, lpReflectiveLoader, lpParameter, (DWORD)NULL, &dwThreadId );
+			hThread = CreateRemoteThread( hProcess, nullptr, 1024*1024, lpReflectiveLoader, lpParameter, (DWORD)NULL, &dwThreadId );
 
 		} while( 0 );
 
 	}
 	__except( EXCEPTION_EXECUTE_HANDLER )
 	{
-		hThread = NULL;
+		hThread = nullptr;
 	}
 
 	return hThread;

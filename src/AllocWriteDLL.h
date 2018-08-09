@@ -7,5 +7,7 @@
 
 */
 
-LPTHREAD_START_ROUTINE AllocWriteDLL(HANDLE hTargetProcHandle, LPCSTR dllPath);
-LPTHREAD_START_ROUTINE AllocWritePath(HANDLE hTargetProcHandle, LPCSTR dllPath, LPVOID *lpExecParam);
+#pragma once
+
+LPTHREAD_START_ROUTINE alloc_write_dll(HANDLE h_target_proc_handle, LPCSTR dll_path);
+LPTHREAD_START_ROUTINE alloc_write_path(HANDLE h_target_proc_handle, LPCSTR dll_path, LPVOID *lp_exec_param);

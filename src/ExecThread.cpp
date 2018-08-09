@@ -159,9 +159,9 @@ VOID suspendInjectResume(HANDLE hHandle, LPVOID loadLibAddr, LPVOID dllPathAddr)
 
 HANDLE bCreateRemoteThread(HANDLE hHandle, LPVOID loadLibAddr, LPVOID dllPathAddr) {
 
-	HANDLE hRemoteThread = NULL;
+	HANDLE hRemoteThread = nullptr;
 
-	LPVOID ntCreateThreadExAddr = NULL;
+	LPVOID ntCreateThreadExAddr = nullptr;
 	NtCreateThreadExBuffer ntbuffer;
 	DWORD temp1 = 0; 
 	DWORD temp2 = 0; 
@@ -184,7 +184,7 @@ HANDLE bCreateRemoteThread(HANDLE hHandle, LPVOID loadLibAddr, LPVOID dllPathAdd
 		NTSTATUS status = funNtCreateThreadEx(
 										&hRemoteThread,
 										0x1FFFFF,
-										NULL,
+										nullptr,
 										hHandle,
 										(LPTHREAD_START_ROUTINE)loadLibAddr,
 										dllPathAddr,
@@ -195,16 +195,16 @@ HANDLE bCreateRemoteThread(HANDLE hHandle, LPVOID loadLibAddr, LPVOID dllPathAdd
 										&ntbuffer
 										);
 		
-		if (hRemoteThread == NULL) {
+		if (hRemoteThread == nullptr) {
 			printf("\t[!] NtCreateThreadEx Failed! [%d][%08x]\n", GetLastError(), status);
-			return NULL;
+			return nullptr;
 		} else {
 			return hRemoteThread;
 		}
 	} else {
 		printf("\n[!] Could not find NtCreateThreadEx!\n");
 	}
-	return NULL;
+	return nullptr;
 
 }
 
@@ -217,8 +217,8 @@ HANDLE bCreateUserThread(HANDLE hHandle, LPVOID loadLibAddr, LPVOID dllPathAddr)
 	*/
 
 
-	HANDLE hRemoteThread = NULL;
-	LPVOID rtlCreateUserAddr = NULL;
+	HANDLE hRemoteThread = nullptr;
+	LPVOID rtlCreateUserAddr = nullptr;
 	
 	CLIENT_ID cid;
 	
@@ -229,26 +229,26 @@ HANDLE bCreateUserThread(HANDLE hHandle, LPVOID loadLibAddr, LPVOID dllPathAddr)
 		LPFUN_RtlCreateUserThread funRtlCreateUserThread = (LPFUN_RtlCreateUserThread)rtlCreateUserAddr;
 		funRtlCreateUserThread(
 					hHandle,			// ProcessHandle
-					NULL,				// SecurityDescriptor (OPTIONAL)
+					nullptr,				// SecurityDescriptor (OPTIONAL)
 					FALSE,				// CreateSuspended
 					0,					// StackZeroBits
-					0,					// StackReserved
-					0,					// StackCommit
+					nullptr,					// StackReserved
+					nullptr,					// StackCommit
 					(PVOID) loadLibAddr,// StartAddress
 					(PVOID) dllPathAddr,// StartParameter (OPTIONAL)
 					&hRemoteThread,		// ThreadHandle
 					&cid				// ClientID
 				);
 		
-		if (hRemoteThread == NULL) {
+		if (hRemoteThread == nullptr) {
 			printf("\t[!] RtlCreateUserThread Failed! [%d]\n", GetLastError());
-			return NULL;
+			return nullptr;
 		} else {
 			return hRemoteThread;
 		}
 	} else {
 		printf("\n[!] Could not find RtlCreateUserThread!\n");
 	}
-	return NULL;
+	return nullptr;
 
 }
